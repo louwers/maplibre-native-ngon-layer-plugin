@@ -20,8 +20,8 @@ if let path = ProcessInfo.processInfo.environment["MAPLIBRE_IOS_PATH"] {
 // The target spans the repository root, so exclude everything except the plugin sources,
 // their headers and the generated Objective-C wrapper (tools/, render-tests/, build/, ...).
 let sources = [
-    "src/square_layer.cpp",
-    "apple/src/SquareLayer.mm",
+    "src/ngon_layer.cpp",
+    "apple/src/NgonLayer.mm",
 ]
 let keptDirectories: Set<String> = ["apple", "include", "src"]
 let headerExtensions: Set<String> = ["h", "hh", "hpp", "hxx", "inc", "inl", "ipp"]
@@ -46,15 +46,15 @@ let excluded = topLevel.filter { !keptDirectories.contains($0) && !sources.conta
     + keptDirectories.sorted().flatMap(excludedFiles(in:))
 
 let package = Package(
-    name: "SquareLayer",
+    name: "NgonLayer",
     platforms: [.iOS("15.5")],
     products: [
-        .library(name: "SquareLayer", targets: ["SquareLayer"]),
+        .library(name: "NgonLayer", targets: ["NgonLayer"]),
     ],
     dependencies: [mapLibreIOS],
     targets: [
         .target(
-            name: "SquareLayer",
+            name: "NgonLayer",
             dependencies: [.product(name: "MapLibrePluginApi", package: mapLibreIOSPackage)],
             path: ".",
             exclude: excluded,
@@ -62,10 +62,12 @@ let package = Package(
             publicHeadersPath: "apple/include",
             cSettings: [
                 .headerSearchPath("include"),
+                .headerSearchPath("src"),
                 .define("MLN_PLUGIN_VERSION", to: "\"0.1.0\""),
             ],
             cxxSettings: [
                 .headerSearchPath("include"),
+                .headerSearchPath("src"),
                 .define("MLN_PLUGIN_VERSION", to: "\"0.1.0\""),
             ],
             linkerSettings: [

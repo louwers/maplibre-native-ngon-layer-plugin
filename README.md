@@ -1,80 +1,104 @@
-# MapLibre Native plugin template
+# MapLibre Native n-gon layer plugin
 
-A starting point for a [MapLibre Native](https://github.com/maplibre/maplibre-native) layer plugin
-for Android and iOS. It contains one small, working plugin: the `square` layer type, which draws a
-screen-aligned square at every point of a source.
+A [MapLibre Native](https://github.com/maplibre/maplibre-native) plugin for Android and iOS that draws
+regular convex polygons (n-gons) centered on Point and MultiPoint features of GeoJSON and vector-tile
+sources. The style layer type is `ngon`.
+
+Built with [maplibre-native-plugins](https://github.com/louwers/maplibre-native-plugins) from the
+[plugin template](https://github.com/louwers/maplibre-native-plugin-template).
+
+> [!NOTE]
+> The MapLibre Native plugin API is experimental. Use the plugin-enabled SDK versions listed for the
+> release you use: the MapLibre Android pre-release and
+> [maplibre-ios-with-plugin-api](https://github.com/louwers/maplibre-ios-with-plugin-api).
+
+## Style
 
 ```json
-{"id": "dots", "type": "square", "source": "points",
- "paint": {"square-color": ["get", "color"], "square-size": 24}}
+{
+  "id": "markers",
+  "type": "ngon",
+  "source": "points",
+  "paint": {
+    "ngon-corners": ["get", "corners"],
+    "ngon-radius": ["interpolate", ["linear"], ["zoom"], 10, 6, 16, 24],
+    "ngon-rotate": ["get", "heading"],
+    "ngon-color": ["get", "color"],
+    "ngon-stroke-width": 2,
+    "ngon-stroke-color": "#ffffff"
+  }
+}
 ```
 
-Builds, demo apps, render tests and releases come from
-[maplibre-native-plugins](https://github.com/louwers/maplibre-native-plugins), included as the `tools`
-submodule. For a complete plugin built from this template, see
-[maplibre-native-ngon-layer-plugin](https://github.com/louwers/maplibre-native-ngon-layer-plugin).
+Every property below supports constants, camera, feature, composite and feature-state
+expressions. Numeric values and colors support transitions; enum strings do not.
+All properties are paint properties. Ordinary source-layer, filter, visibility and
+minzoom/maxzoom behavior comes from the host's source-bound layer implementation.
 
-## Start a plugin
+| Property | Default | Meaning |
+| --- | --- | --- |
+| `ngon-radius` | `5` | Circumradius in logical pixels; nonnegative. |
+| `ngon-corners` | `5` | 3–360 corners, rounded to the nearest integer. |
+| `ngon-rotate` | `0` | Clockwise degrees; zero places one vertex upward. |
+| `ngon-color` | `#000000` | Fill color, including alpha. |
+| `ngon-opacity` | `1` | Fill opacity, 0–1. |
+| `ngon-blur` | `0` | Inward edge feather as a fraction of radius, 0–1. |
+| `ngon-stroke-width` | `0` | Outside stroke width in logical pixels; mitered corners. |
+| `ngon-stroke-color` | `#000000` | Stroke color, including alpha. |
+| `ngon-stroke-opacity` | `1` | Stroke opacity, 0–1. |
+| `ngon-translate` | `[0, 0]` | Pixel offset: right, down. |
+| `ngon-translate-anchor` | `map` | `map` rotates the offset with the map; `viewport` does not. |
+| `ngon-pitch-alignment` | `viewport` | `viewport` faces the camera; `map` lies in the map plane. |
+| `ngon-pitch-scale` | `map` | `map` scales with perspective; `viewport` maintains size. |
 
-1. Select **Use this template > Create a new repository** on GitHub (or fork this repository), then clone
-   it with its submodule:
+Rotation is measured in the alignment plane. The map-aligned case rotates with the
+map. As with circle markers, this is not a collision-placed symbol layer. Sort keys,
+terrain/globe projection, patterns and collision placement are not implemented.
+Transparent paint is still queryable, matching geometric hit testing; zero radius
+and zero stroke produce no hit. Queries use the actual rotated polygon, not its quad.
 
-   ```sh
-   gh repo create my-layer-plugin --public --clone --template louwers/maplibre-native-plugin-template
-   cd my-layer-plugin && git submodule update --init
-   ```
+## Use it
 
-2. Rename the example. Everything plugin-specific is in these files:
-   - `plugin.json`: `id`, `displayName`, `description`, `registerFunction`, `header`, `sources`.
-     Platform names (Android class and package, Swift product, Objective-C class) are derived
-     from `id`; override them under `android` and `apple` if needed.
-   - `include/square_layer.h` and `src/square_layer.cpp`: the plugin. Rename the files and the
-     `mln_square_layer_register` function, then change the plugin ID (`org.maplibre.square-layer`),
-     the layer type (`square`), its paint properties and its shaders.
-   - `examples/square.json`: the style the demo apps load (`demo.style` in `plugin.json`).
-   - `render-tests/`: one directory per test with a `style.json` and the reviewed `expected.png`.
-3. Regenerate the Swift package and the iOS wrapper with `tools/bin/plugin sync`, and check the derived
-   names with `tools/bin/plugin config`.
+Download the AAR or XCFramework from the [releases](https://github.com/louwers/maplibre-native-ngon-layer-plugin/releases),
+or add this repository as a Swift package at a release tag. See
+[using a released plugin](https://github.com/louwers/maplibre-native-plugins/blob/main/docs/releases.md#using-a-released-plugin-in-an-app)
+for the dependencies.
 
-## How the example works
+Register the plugin before loading a style with `ngon` layers:
 
-`src/square_layer.cpp` is commented from top to bottom. In short:
+```kotlin
+MapLibre.getInstance(context)
+org.maplibre.plugins.ngonlayer.NgonLayerPlugin.register()
+```
 
-- **Registration.** `mln_square_layer_register` passes a `mln_plugin_descriptor_v1` to MapLibre. It
-  declares the layer type, its paint properties with defaults, and one shader with sources for
-  OpenGL, Vulkan and Metal.
-- **Layout.** On worker threads, MapLibre calls `layoutFeature` for every point feature in a tile.
-  The plugin emits four vertices and two triangles per point.
-- **Paint properties.** Property bindings tell MapLibre where to put evaluated values: in the
-  uniform block for constants and zoom expressions, or in vertex attributes for data-driven
-  expressions. The shaders select the right source with the
-  `MLN_PLUGIN_PROPERTY_<NAME>_IS_UNIFORM` macros MapLibre defines.
-- **Rendering.** Every frame, `updateUniform` writes the tile matrix and pixel scale. MapLibre owns
-  all GPU resources and draws the triangles.
+```swift
+import MapLibre
+import NgonLayer
+
+try NgonLayerPlugin.registerPlugin()
+```
 
 ## Develop
 
 ```sh
-tools/bin/plugin run-android --renderer vulkan   # demo app on a connected device or emulator
+git clone --recursive https://github.com/louwers/maplibre-native-ngon-layer-plugin
+cd maplibre-native-ngon-layer-plugin
+tools/bin/plugin run-android --renderer vulkan   # demo app on a device or emulator
 tools/bin/plugin run-ios                         # demo app on an iOS simulator
-tools/bin/plugin render-tests                    # Metal on macOS; --backend opengl|vulkan on Linux
-tools/bin/plugin render-tests -- --update default   # record expected.png files, then review them
+tools/bin/plugin render-tests                    # render tests (Metal on macOS)
 ```
 
-CI checks that generated files are current, builds both platforms, starts the iOS demo app and runs the
-render tests on Metal, OpenGL and Vulkan. See the
-[tools documentation](https://github.com/louwers/maplibre-native-plugins#readme) for all commands.
+The shaders for OpenGL, Vulkan and Metal are generated by `scripts/generate-shaders.mjs`. The generated
+header is checked in, so builds don't need Node.js. Regenerate it after changing the generator:
+
+```sh
+node scripts/generate-shaders.mjs --output src/ngon_shader_sources.hpp
+```
+
+The render tests cover corner counts and rotation, every property feature-driven at once, fractional
+composite zoom, feature state, runtime paint updates, tile seams and MultiPoint, blur, translation, and
+all four pitch alignment and scale combinations. One set of expected images is shared by all backends.
 
 ## Release
 
-Set `version` in `plugin.json`, run `tools/bin/plugin generate`, commit, and run the **Release**
-workflow. It publishes an Android AAR and an iOS XCFramework to a GitHub release tagged with the
-version. Swift Package Manager users can also depend on the repository directly at that tag.
-
-## Update the tools
-
-```sh
-git -C tools fetch --tags && git -C tools checkout <tag>
-tools/bin/plugin sync     # refreshes workflows, Gradle files and the Swift package
-git add -A && git commit -m "Update plugin tools to <tag>"
-```
+Set `version` in `plugin.json`, run `tools/bin/plugin generate`, commit, and run the **Release** workflow.

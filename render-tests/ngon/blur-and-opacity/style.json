@@ -2,15 +2,16 @@
   "version": 8,
   "metadata": {
     "test": {
-      "width": 128,
-      "height": 128
+      "width": 384,
+      "height": 256,
+      "description": "blur-and-opacity"
     }
   },
   "center": [
     0,
     0
   ],
-  "zoom": 2,
+  "zoom": 10,
   "sources": {
     "points": {
       "type": "geojson",
@@ -19,23 +20,25 @@
         "features": [
           {
             "type": "Feature",
+            "id": 1,
             "properties": {
-              "color": "#e55e5e",
-              "size": 12
+              "blur": 0,
+              "alpha": 1
             },
             "geometry": {
               "type": "Point",
               "coordinates": [
-                -7,
+                -0.09,
                 0
               ]
             }
           },
           {
             "type": "Feature",
+            "id": 2,
             "properties": {
-              "color": "#56b881",
-              "size": 24
+              "blur": 0.35,
+              "alpha": 0.7
             },
             "geometry": {
               "type": "Point",
@@ -47,15 +50,16 @@
           },
           {
             "type": "Feature",
+            "id": 3,
             "properties": {
-              "color": "#3887be",
-              "size": 36
+              "blur": 0.7,
+              "alpha": 0.4
             },
             "geometry": {
               "type": "Point",
               "coordinates": [
-                7,
-                4
+                0.09,
+                0
               ]
             }
           }
@@ -68,22 +72,28 @@
       "id": "background",
       "type": "background",
       "paint": {
-        "background-color": "#ffffff"
+        "background-color": "#eef2f7"
       }
     },
     {
-      "id": "squares",
-      "type": "square",
+      "id": "points",
+      "type": "ngon",
       "source": "points",
       "paint": {
-        "square-color": [
+        "ngon-radius": 30,
+        "ngon-corners": 5,
+        "ngon-color": "#e11d48",
+        "ngon-blur": [
           "get",
-          "color"
+          "blur"
         ],
-        "square-size": [
+        "ngon-opacity": [
           "get",
-          "size"
-        ]
+          "alpha"
+        ],
+        "ngon-stroke-width": 4,
+        "ngon-stroke-color": "#2563eb",
+        "ngon-stroke-opacity": 0.5
       }
     }
   ]

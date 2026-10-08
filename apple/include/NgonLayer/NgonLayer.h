@@ -3,17 +3,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/** Error domain of errors returned by `+[MLNSquareLayerPlugin registerPluginWithError:]`. */
-FOUNDATION_EXPORT NSErrorDomain const MLNSquareLayerPluginErrorDomain;
+/** Error domain of errors returned by `+[MLNNgonLayerPlugin registerPluginWithError:]`. */
+FOUNDATION_EXPORT NSErrorDomain const MLNNgonLayerPluginErrorDomain;
 
 /**
- Registers the Square layer plugin (version 0.1.0) with MapLibre.
+ Registers the Ngon layer plugin (version 0.1.0) with MapLibre.
 
  Call it before creating a map that loads a style using the plugin's layer types.
  Registering again succeeds.
  */
-NS_SWIFT_NAME(SquareLayerPlugin)
-@interface MLNSquareLayerPlugin : NSObject
+NS_SWIFT_NAME(NgonLayerPlugin)
+@interface MLNNgonLayerPlugin : NSObject
 
 /** The plugin version. */
 @property (class, nonatomic, readonly) NSString *version;

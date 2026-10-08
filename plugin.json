@@ -1,14 +1,15 @@
 {
   "schemaVersion": 1,
-  "id": "square-layer",
-  "displayName": "Square layer",
-  "description": "Example MapLibre Native plugin that draws a square at every point",
+  "id": "ngon-layer",
+  "displayName": "Ngon layer",
+  "description": "Source-bound regular polygon (n-gon) style layer for MapLibre Native",
   "version": "0.1.0",
-  "registerFunction": "mln_square_layer_register",
-  "header": "include/square_layer.h",
-  "sources": ["src/square_layer.cpp"],
-  "includeDirectories": ["include"],
+  "registerFunction": "mln_ngon_layer_register",
+  "header": "include/ngon_layer.h",
+  "sources": ["src/ngon_layer.cpp"],
+  "includeDirectories": ["include", "src"],
   "demo": {
-    "style": "examples/square.json"
+    "style": "examples/ngon.json",
+    "camera": {"latitude": 0, "longitude": 0, "zoom": 11.3}
   }
 }
