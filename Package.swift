@@ -63,12 +63,12 @@ let package = Package(
             cSettings: [
                 .headerSearchPath("include"),
                 .headerSearchPath("src"),
-                .define("MLN_PLUGIN_VERSION", to: "\"0.1.0\""),
+                .define("MLN_PLUGIN_VERSION", to: "\"0.1.1\""),
             ],
             cxxSettings: [
                 .headerSearchPath("include"),
                 .headerSearchPath("src"),
-                .define("MLN_PLUGIN_VERSION", to: "\"0.1.0\""),
+                .define("MLN_PLUGIN_VERSION", to: "\"0.1.1\""),
             ],
             linkerSettings: [
                 .linkedFramework("Foundation"),

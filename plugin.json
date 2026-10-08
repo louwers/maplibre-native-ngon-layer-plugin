@@ -3,7 +3,7 @@
   "id": "ngon-layer",
   "displayName": "Ngon layer",
   "description": "Source-bound regular polygon (n-gon) style layer for MapLibre Native",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "registerFunction": "mln_ngon_layer_register",
   "header": "include/ngon_layer.h",
   "sources": ["src/ngon_layer.cpp"],

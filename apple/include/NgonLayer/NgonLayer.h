@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_EXPORT NSErrorDomain const MLNNgonLayerPluginErrorDomain;
 
 /**
- Registers the Ngon layer plugin (version 0.1.0) with MapLibre.
+ Registers the Ngon layer plugin (version 0.1.1) with MapLibre.
 
  Call it before creating a map that loads a style using the plugin's layer types.
  Registering again succeeds.

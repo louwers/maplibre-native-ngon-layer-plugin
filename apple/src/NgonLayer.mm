@@ -8,7 +8,7 @@ NSErrorDomain const MLNNgonLayerPluginErrorDomain = @"org.maplibre.plugins.ngon-
 @implementation MLNNgonLayerPlugin
 
 + (NSString *)version {
-    return @"0.1.0";
+    return @"0.1.1";
 }
 
 + (BOOL)registerPluginWithError:(NSError **)error {
